@@ -1,4 +1,4 @@
-import { HomeAuthCard } from "@/components/home/home-auth-card";
+import { HomeAuthCard } from "@/components/root/home-auth-card";
 import { redirect } from "next/navigation";
 import { cookies } from 'next/headers';
 

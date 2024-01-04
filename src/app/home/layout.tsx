@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { NavMenu } from "@/components/nav/nav-menu";
 
 export default function RootLayout({
   children,
@@ -7,9 +7,7 @@ export default function RootLayout({
 }) {
   return (
     <>
-        <header>
-            main nav menu
-        </header>
+        <NavMenu />
         {children}
     </>
   );
