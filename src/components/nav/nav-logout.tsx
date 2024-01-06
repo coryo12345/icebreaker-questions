@@ -1,6 +1,6 @@
 "use client";
 
-import { logout } from "@/actions/logout";
+import { logout } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 
 export function NavLogout() {

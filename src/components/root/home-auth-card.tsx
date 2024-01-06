@@ -1,5 +1,6 @@
 "use client";
 
+import { login, register } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,32 +15,46 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { toast } from "sonner";
 
-type Props = Readonly<{
-  verify: (val: string) => Promise<boolean>;
-}>;
-
-export function HomeAuthCard({ verify }: Props) {
+export function HomeAuthCard() {
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleAuth = async () => {
-    setLoading(true);
-    const result = await verify(password);
-    if (result === false) {
-      setLoading(false);
-      toast.error("Invalid Password");
+  const handleLogin = async () => {
+    const success = await login(username, password);
+    if (!success) {
+      toast.error("Failed to log in. Check your username and password.");
     }
   };
 
+  const handleRegister = async () => {
+    const success = await register(username, password);
+    if (!success) {
+      toast.error("Failed to sign you up. Pick a different username or try again later.");
+    }
+  }
+
   return (
-    <Card>
+    <Card className="min-w-[300px]">
       <CardHeader>
-        <CardTitle>Enter Password</CardTitle>
+        <CardTitle>Enter Credentials</CardTitle>
         <CardDescription>
-          Enter the secret password to enter the app
+          Login / Register to enter the app
         </CardDescription>
       </CardHeader>
       <CardContent>
+      <Label htmlFor="username" className="mb-2">
+          Username
+        </Label>
+        <Input
+          id="username"
+          name="username"
+          placeholder="anduin_wrynn42"
+          type="text"
+          value={username}
+          onInput={(e) => {
+            setUsername(e.currentTarget.value);
+          }}
+        />
         <Label htmlFor="password" className="mb-2">
           Password
         </Label>
@@ -55,7 +70,10 @@ export function HomeAuthCard({ verify }: Props) {
         />
       </CardContent>
       <CardFooter>
-        <Button onClick={handleAuth}>Submit</Button>
+        <div className="flex gap-2">
+        <Button onClick={() => handleLogin()}>Login</Button>
+        <Button variant="secondary" onClick={() => handleRegister()}>Register</Button>
+        </div>
       </CardFooter>
     </Card>
   );
