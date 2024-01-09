@@ -21,14 +21,14 @@ export function HomeAuthCard() {
 
   const handleLogin = async () => {
     const success = await login(username, password);
-    if (!success) {
+    if (success === false) {
       toast.error("Failed to log in. Check your username and password.");
     }
   };
 
   const handleRegister = async () => {
     const success = await register(username, password);
-    if (!success) {
+    if (success === false) {
       toast.error("Failed to sign you up. Pick a different username or try again later.");
     }
   }

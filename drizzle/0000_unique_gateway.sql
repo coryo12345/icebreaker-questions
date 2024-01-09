@@ -1,6 +1,6 @@
 CREATE TABLE `users` (
-	`id` text PRIMARY KEY NOT NULL,
-	`username` text,
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`username` text NOT NULL,
 	`password_hash` text
 );
 --> statement-breakpoint
