@@ -45,6 +45,5 @@ export async function login(
 
 export async function logout() {
   cookies().delete("Authorization");
-  // this doesnt work b/c of a bug in nextjs https://github.com/vercel/next.js/issues/58263
   redirect("/", RedirectType.replace);
 }
