@@ -1,5 +1,3 @@
-import "server-only";
-
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
@@ -10,7 +8,7 @@ export const users = sqliteTable("users", {
 
 export const refreshTokens = sqliteTable("refresh_tokens", {
   id: integer("id")
-    .primaryKey({ autoIncrement: true })
+    .primaryKey()
     .references(() => users.id),
   value: text("value").notNull(),
   expiresAt: text("expires_at").notNull(),

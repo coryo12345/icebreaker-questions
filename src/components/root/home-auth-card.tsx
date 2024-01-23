@@ -1,6 +1,5 @@
 "use client";
 
-import { login, register } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,19 +18,9 @@ export function HomeAuthCard() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async () => {
-    const success = await login(username, password);
-    if (success === false) {
-      toast.error("Failed to log in. Check your username and password.");
-    }
-  };
+  const handleLogin = async () => {};
 
-  const handleRegister = async () => {
-    const success = await register(username, password);
-    if (success === false) {
-      toast.error("Failed to sign you up. Pick a different username or try again later.");
-    }
-  }
+  const handleRegister = async () => {}
 
   return (
     <Card className="min-w-[300px]">
