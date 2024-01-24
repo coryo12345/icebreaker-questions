@@ -1,14 +1,8 @@
 import { HomeAuthCard } from "@/components/root/home-auth-card";
-import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { CONSTANTS } from "@/constants";
-import { Button } from "@/components/ui/button";
+import { redirectIfLoggedIn } from "@/server/session";
 
-// TODO - retrieve password from env variable
-const USER_ID_1 = "example";
-const USER_ID_2 = "example2";
-
-export default function Home() {
+export default async function Home() {
+  await redirectIfLoggedIn("/home");
   return (
     <main className="mt-8 flex items-center justify-center h-full w-full">
       <HomeAuthCard />

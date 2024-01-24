@@ -6,15 +6,6 @@ export const users = sqliteTable("users", {
   passwordHash: text("password_hash"),
 });
 
-export const refreshTokens = sqliteTable("refresh_tokens", {
-  id: integer("id")
-    .primaryKey()
-    .references(() => users.id),
-  value: text("value").notNull(),
-  expiresAt: text("expires_at").notNull(),
-  createdAt: text("created_at").notNull(),
-});
-
 // export const groups = sqliteTable("groups", {}); // groups players together
 
 // export const questions = sqliteTable("questions", {}); // list of questions

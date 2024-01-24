@@ -1,7 +1,17 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useSession } from "@/lib/session";
+import { useRouter } from "next/navigation";
 
 export function NavLogout() {
-  return <Button variant="secondary">Log Out</Button>;
+  const session = useSession();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await session.logout();
+    router.push('/');
+  }
+
+  return <Button variant="secondary" onClick={handleLogout}>Log Out</Button>;
 }
