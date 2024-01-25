@@ -4,8 +4,8 @@ import { NavMenuMobile } from "@/components/nav/nav-menu-mobile";
 
 export const MENU_ITEMS: { name: string; href: string }[] = [
   { name: "Home", href: "/home" },
-  { name: "Answer Questions", href: "/answer" },
-  { name: "View Answers", href: "/view" },
+  { name: "Answers", href: "/home/answers" },
+  { name: "Games", href: "/home/games" },
 ];
 
 export function NavMenu() {
