@@ -11,6 +11,16 @@ export async function getDb() {
   if (!db) {
     db = drizzle(sqlite);
     await migrate(db, { migrationsFolder: "./drizzle" });
+    await seedDb();
   }
   return db;
+}
+
+
+async function seedDb() {
+  // This must be re-runable!
+  
+  // game types
+
+  // questions
 }

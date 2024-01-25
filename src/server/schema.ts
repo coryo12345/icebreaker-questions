@@ -1,4 +1,10 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+  index,
+  integer,
+  primaryKey,
+  sqliteTable,
+  text,
+} from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -6,10 +12,44 @@ export const users = sqliteTable("users", {
   passwordHash: text("password_hash"),
 });
 
-// export const groups = sqliteTable("groups", {}); // groups players together
+// list of questions
+export const questions = sqliteTable(
+  "questions",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    value: text("value").unique().notNull(),
+  },
+  (table) => ({
+    valueIdx: index("value_idx").on(table.value),
+  })
+);
 
-// export const questions = sqliteTable("questions", {}); // list of questions
+// game types
+export const gameTypes = sqliteTable("game_types", {
+  id: integer("id").primaryKey(),
+  name: text("name").unique().notNull(),
+});
 
-// export const groupAnswers = sqliteTable("group_answers", {}); // player answers for each group
+// games
+export const games = sqliteTable("games", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  player1: integer("player_1").references((): any => users.id),
+  player2: integer("player_2").references((): any => users.id),
+  gameType: integer("game_type").references((): any => gameTypes.id),
+  name: text("name").notNull().default(""),
+  totalQuestions: integer("total_questions").notNull().default(5),
+  currentQuestion: integer("current_question").notNull().default(0), // 0-based
+});
 
-// export const userAnswers = sqliteTable('user_answers', {}); // answers for a user that they can re-use for different groups
+// answers for a user that they can re-use for different games
+export const userAnswers = sqliteTable(
+  "user_answers",
+  {
+    userId: integer("user_id").references((): any => users.id),
+    questionId: integer("question_id").references((): any => questions.id),
+    value: text("value").notNull().default(""),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.userId, table.questionId] }),
+  })
+);
