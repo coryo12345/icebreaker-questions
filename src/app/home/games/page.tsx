@@ -1,6 +1,3 @@
-import { redirectIfNotLoggedIn } from "@/server/session";
-
-export default async function GamesPage() {
-  await redirectIfNotLoggedIn("/");
+export default function GamesPage() {
   return <main>game page!</main>;
 }
