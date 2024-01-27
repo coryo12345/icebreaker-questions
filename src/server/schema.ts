@@ -33,6 +33,7 @@ export const gameTypes = sqliteTable("game_types", {
 // games
 export const games = sqliteTable("games", {
   id: integer("id").primaryKey({ autoIncrement: true }),
+  started: integer("started", { mode: "boolean" }),
   player1: integer("player_1").references((): any => users.id),
   player2: integer("player_2").references((): any => users.id),
   gameType: integer("game_type").references((): any => gameTypes.id),

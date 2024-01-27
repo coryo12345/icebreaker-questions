@@ -4,11 +4,13 @@ import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 
 export type SessionData = {
+  id: number;
   username: string;
   isLoggedIn: boolean;
 };
 
 export const defaultSession: SessionData = {
+  id: -1,
   username: "",
   isLoggedIn: false,
 };
@@ -33,7 +35,7 @@ export function useSession() {
   const { data: session, isLoading } = useSWR(
     SESSION_API_ROUTE,
     fetchJSON<SessionData>,
-    { fallbackData: defaultSession }
+    { fallbackData: { ...defaultSession } }
   );
 
   const { trigger: register } = useSWRMutation(
