@@ -30,7 +30,7 @@ export default async function HomePage() {
         </CardContent>
         <CardFooter>
           <Link href="/home/answers">
-            <Button className="text-md" variant="secondary">
+            <Button className="text-sm" variant="secondary">
               View All Answers
             </Button>
           </Link>
@@ -49,12 +49,12 @@ export default async function HomePage() {
         </CardContent>
         <CardFooter>
           <Link href="/home/games" className="mr-2">
-            <Button className="text-md" variant="secondary">
+            <Button className="text-sm" variant="secondary">
               All Games
             </Button>
           </Link>
           <Link href="/home/games/new">
-            <Button className="text-md">New Game</Button>
+            <Button className="text-sm">New Game</Button>
           </Link>
         </CardFooter>
       </Card>
