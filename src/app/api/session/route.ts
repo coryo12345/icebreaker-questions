@@ -69,7 +69,6 @@ export async function DELETE() {
   const session = await getIronSession<SessionData>(cookies(), sessionOptions);
 
   session.destroy();
-  console.log(defaultSession);
 
   return Response.json({ ...defaultSession });
 }
