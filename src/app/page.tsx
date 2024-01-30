@@ -1,4 +1,4 @@
-import { HomeAuthCard } from "@/components/root/home-auth-card";
+import { HomeAuthCard } from "@/app/home-auth-card";
 import { redirectIfLoggedIn } from "@/server/session";
 
 export default async function Home() {
