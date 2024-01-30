@@ -19,6 +19,7 @@
     "better-sqlite3": "^9.2.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "csv-parse": "^5.5.3",
     "dotenv": "^16.3.1",
     "drizzle-orm": "^0.29.3",
     "iron-session": "^8.0.1",

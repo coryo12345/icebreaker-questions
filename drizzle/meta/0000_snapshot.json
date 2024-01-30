@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "4b0abd5c-e503-453e-84f8-ca5a96ed86ba",
+  "id": "3c9b2102-c5dd-4ea7-9e09-63548a549892",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "game_types": {
@@ -44,6 +44,14 @@
           "primaryKey": true,
           "notNull": true,
           "autoincrement": true
+        },
+        "status": {
+          "name": "status",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
         },
         "player_1": {
           "name": "player_1",

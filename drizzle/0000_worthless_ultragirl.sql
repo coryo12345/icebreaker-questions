@@ -5,6 +5,7 @@ CREATE TABLE `game_types` (
 --> statement-breakpoint
 CREATE TABLE `games` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`status` integer DEFAULT 0 NOT NULL,
 	`player_1` integer,
 	`player_2` integer,
 	`game_type` integer,
