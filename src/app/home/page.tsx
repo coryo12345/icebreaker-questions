@@ -1,3 +1,6 @@
+import { getLatestAnswers, getRecentGames } from "@/app/home/actions";
+import { AnswersTable } from "@/app/home/answers-table";
+import { GamesTable } from "@/app/home/games-table";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,9 +12,12 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const games = await getRecentGames();
+  const answers = await getLatestAnswers();
+
   return (
-    <main>
+    <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
           <CardTitle>My Answers</CardTitle>
@@ -19,7 +25,9 @@ export default function HomePage() {
             Your recently added or edited answers
           </CardDescription>
         </CardHeader>
-        <CardContent>TODO</CardContent>
+        <CardContent>
+          <AnswersTable answers={answers} />
+        </CardContent>
         <CardFooter>
           <Link href="/home/answers">
             <Button className="text-md" variant="secondary">
@@ -33,19 +41,23 @@ export default function HomePage() {
         <CardHeader>
           <CardTitle>My Games</CardTitle>
           <CardDescription>
-            Recent games you have participated in.
+            Recent games you have participated in
           </CardDescription>
         </CardHeader>
-        <CardContent>asd</CardContent>
+        <CardContent>
+          <GamesTable games={games} />
+        </CardContent>
         <CardFooter>
-          <Link href="/home/games/new">
-            <Button>New Game</Button>
+          <Link href="/home/games" className="mr-2">
+            <Button className="text-md" variant="secondary">
+              All Games
+            </Button>
           </Link>
-          <Link href="/home/games">
-            <Button>All Games</Button>
+          <Link href="/home/games/new">
+            <Button className="text-md">New Game</Button>
           </Link>
         </CardFooter>
       </Card>
-    </main>
+    </div>
   );
 }
