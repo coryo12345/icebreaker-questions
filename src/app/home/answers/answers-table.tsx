@@ -32,10 +32,10 @@ type UserAnswer = typeof userAnswers.$inferSelect & {
 export default function AnswersTable({
   questions,
   ...props
-}: {
+}: Readonly<{
   questions: (typeof questionSchema.$inferSelect)[];
-  answers: (typeof userAnswers.$inferSelect)[];
-}) {
+  answers:  (typeof userAnswers.$inferSelect)[];
+}>) {
   const { session } = useSession();
   const [savedAnswers, setSavedAnswers] = useState(props.answers);
   const [modifiedAnswers, setModifiedAnswers] = useState(props.answers);
@@ -160,7 +160,7 @@ export default function AnswersTable({
   );
 }
 
-function SaveButton({ unsaved, save }: { unsaved: boolean; save: () => void }) {
+function SaveButton({ unsaved, save }: Readonly<{ unsaved: boolean; save: () => void }>) {
   return (
     <div className="flex items-center gap-2">
       <Button onClick={save} disabled={!unsaved}>
