@@ -8,6 +8,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -20,9 +21,14 @@ import {
 } from "@/components/ui/tooltip";
 import { useSession } from "@/lib/session";
 import { questions as questionSchema, userAnswers } from "@/server/schema";
-import { FileWarning } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileWarning } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import {
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 
 type UserAnswer = typeof userAnswers.$inferSelect & {
   question: (typeof questionSchema.$inferSelect)["value"];
@@ -34,7 +40,7 @@ export default function AnswersTable({
   ...props
 }: Readonly<{
   questions: (typeof questionSchema.$inferSelect)[];
-  answers:  (typeof userAnswers.$inferSelect)[];
+  answers: (typeof userAnswers.$inferSelect)[];
 }>) {
   const { session } = useSession();
   const [savedAnswers, setSavedAnswers] = useState(props.answers);
@@ -53,6 +59,34 @@ export default function AnswersTable({
       };
     });
   }, [questions, modifiedAnswers, savedAnswers, session.id]);
+
+  const table = useReactTable({
+    data,
+    columns: [
+      { accessorKey: "question", header: "Question" },
+      { accessorKey: "value", header: "Your Answer" },
+    ],
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+  });
+
+  const footerRowMessage = useMemo<string>(() => {
+    let { minRow, maxRow } = table.getPaginationRowModel().flatRows.reduce(
+      (prev, curr) => {
+        return {
+          minRow: Math.min(curr.index + 1, prev.minRow),
+          maxRow: Math.max(curr.index + 1, prev.maxRow),
+        };
+      },
+      { minRow: Number.MAX_SAFE_INTEGER, maxRow: 0 }
+    );
+    if (data.length === 0) {
+      minRow = 0;
+      maxRow = 0;
+    }
+    return `Showing rows ${minRow}-${maxRow} of ${data.length}`;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [table, table.getPaginationRowModel(), data.length]);
 
   const unsaved = useMemo(() => {
     return (
@@ -120,38 +154,66 @@ export default function AnswersTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((row) => (
-              <TableRow key={row.questionId}>
-                <TableCell>{row.question}</TableCell>
-                <TableCell>
-                  <Input
-                    value={row.value}
-                    onChange={(e) =>
-                      updateAnswer(row.questionId, e.target.value)
-                    }
-                  />
-                </TableCell>
-                <TableCell>
-                  {row.unsaved && (
-                    <TooltipProvider>
-                      <Tooltip delayDuration={200}>
-                        <TooltipContent asChild>
-                          <p>
-                            This answer has not been saved. Click the save
-                            button below.
-                          </p>
-                        </TooltipContent>
-                        <TooltipTrigger asChild>
-                          <FileWarning className="w-8 h-6" />
-                        </TooltipTrigger>
-                      </Tooltip>
-                    </TooltipProvider>
-                  )}
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.original.questionId}>
+                  <TableCell className="p-2">{row.original.question}</TableCell>
+                  <TableCell className="p-2">
+                    <Input
+                      value={row.original.value}
+                      onChange={(e) =>
+                        updateAnswer(row.original.questionId, e.target.value)
+                      }
+                    />
+                  </TableCell>
+                  <TableCell className="p-2">
+                    {row.original.unsaved && (
+                      <TooltipProvider>
+                        <Tooltip delayDuration={200}>
+                          <TooltipContent asChild>
+                            <p>
+                              This answer has not been saved. Click the save
+                              button below.
+                            </p>
+                          </TooltipContent>
+                          <TooltipTrigger asChild>
+                            <FileWarning className="w-8 h-6" />
+                          </TooltipTrigger>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={3} className="h-24 text-center">
+                  No results.
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
+        <div className="flex justify-end items-center gap-2 mt-2">
+          <p className="inline-block text-sm">{footerRowMessage}</p>
+
+          <Button
+            size="icon"
+            variant="secondary"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
+          <Button
+            size="icon"
+            variant="secondary"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            <ChevronRight className="w-4 h-4" />
+          </Button>
+        </div>
       </CardContent>
       <CardFooter>
         <SaveButton unsaved={unsaved} save={save} />
@@ -160,7 +222,10 @@ export default function AnswersTable({
   );
 }
 
-function SaveButton({ unsaved, save }: Readonly<{ unsaved: boolean; save: () => void }>) {
+function SaveButton({
+  unsaved,
+  save,
+}: Readonly<{ unsaved: boolean; save: () => void }>) {
   return (
     <div className="flex items-center gap-2">
       <Button onClick={save} disabled={!unsaved}>
