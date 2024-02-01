@@ -46,8 +46,8 @@ export const games = sqliteTable("games", {
 export const userAnswers = sqliteTable(
   "user_answers",
   {
-    userId: integer("user_id").references((): any => users.id),
-    questionId: integer("question_id").references((): any => questions.id),
+    userId: integer("user_id").references((): any => users.id).notNull(),
+    questionId: integer("question_id").references((): any => questions.id).notNull(),
     value: text("value").notNull().default(""),
   },
   (table) => ({
