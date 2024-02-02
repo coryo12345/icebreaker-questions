@@ -23,9 +23,11 @@ CREATE TABLE `questions` (
 );
 --> statement-breakpoint
 CREATE TABLE `user_answers` (
-	`user_id` integer,
-	`question_id` integer,
+	`user_id` integer NOT NULL,
+	`question_id` integer NOT NULL,
 	`value` text DEFAULT '' NOT NULL,
+	`created_at` integer NOT NULL,
+	`last_modified` integer NOT NULL,
 	PRIMARY KEY(`question_id`, `user_id`),
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`question_id`) REFERENCES `questions`(`id`) ON UPDATE no action ON DELETE no action

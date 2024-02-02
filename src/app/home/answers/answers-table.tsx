@@ -56,6 +56,8 @@ export default function AnswersTable({
         userId: ans?.userId ?? session.id,
         value: ans?.value ?? "",
         unsaved: original?.value !== ans?.value,
+        createdAt: ans?.createdAt ?? new Date(0),
+        lastModified: ans?.lastModified ?? new Date(0),
       };
     });
   }, [questions, modifiedAnswers, savedAnswers, session.id]);
@@ -104,7 +106,7 @@ export default function AnswersTable({
     if (!ans) {
       setModifiedAnswers([
         ...modifiedAnswers,
-        { questionId, userId: session.id, value: answer },
+        { questionId, userId: session.id, value: answer, createdAt: new Date(), lastModified: new Date() },
       ]);
     } else {
       setModifiedAnswers(
@@ -115,6 +117,8 @@ export default function AnswersTable({
                 questionId,
                 userId: session.id,
                 value: answer,
+                createdAt: ans.createdAt,
+                lastModified: new Date(),
               };
             } else {
               return ans;
