@@ -3,6 +3,8 @@ import "server-only";
 
 import { getDb } from "@/server/db";
 import { questions, userAnswers } from "@/server/schema";
+import { eq } from "drizzle-orm";
+import { getSession } from "@/server/session";
 
 export async function getAllQuestions(): Promise<
   (typeof questions.$inferSelect)[] | null
@@ -19,9 +21,14 @@ export async function getAllQuestions(): Promise<
 export async function getUserAnswers(): Promise<
   (typeof userAnswers.$inferSelect)[] | null
 > {
+  const session = await getSession();
+  if (!session.isLoggedIn) {
+    return null;
+  }
+
   const db = await getDb();
   try {
-    const results = await db.select().from(userAnswers);
+    const results = await db.select().from(userAnswers).where(eq(userAnswers.userId, session.id));
     return results;
   } catch (err) {
     return null;
