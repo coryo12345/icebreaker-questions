@@ -1,0 +1,1 @@
+ALTER TABLE game_types ADD `description` text DEFAULT '' NOT NULL;

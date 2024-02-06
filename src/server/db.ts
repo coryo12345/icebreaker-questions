@@ -26,12 +26,36 @@ async function seedDb() {
   // game types
   await db
     .insert(gameTypes)
-    .values({ id: 0, name: "Learning" })
-    .onConflictDoUpdate({ target: gameTypes.id, set: { name: "Learning" } });
+    .values({
+      id: 0,
+      name: "Learning",
+      description:
+        "A game mode where you can learn new things about someone else",
+    })
+    .onConflictDoUpdate({
+      target: gameTypes.id,
+      set: {
+        name: "Learning",
+        description:
+          "A game mode where you can learn new things about someone else",
+      },
+    });
   await db
     .insert(gameTypes)
-    .values({ id: 1, name: "Compete" })
-    .onConflictDoUpdate({ target: gameTypes.id, set: { name: "Compete" } });
+    .values({
+      id: 1,
+      name: "Compete",
+      description:
+        "Compete against your opponent to see who knows more about one another",
+    })
+    .onConflictDoUpdate({
+      target: gameTypes.id,
+      set: {
+        name: "Compete",
+        description:
+          "Compete against your opponent to see who knows more about one another",
+      },
+    });
 
   // questions
   const questionPromises: Promise<any>[] = [];
@@ -51,8 +75,11 @@ async function seedDb() {
 const QUESTION_FILE = path.join(".", "src", "server", "questions.csv");
 const getQuestions = (): { id: number; value: string }[] => {
   const data = fs.readFileSync(QUESTION_FILE, { encoding: "utf-8" });
-  const records: {id: string, question: string}[] = parse(data, { columns: true, skip_empty_lines: true });
-  return records.map(record => ({
+  const records: { id: string; question: string }[] = parse(data, {
+    columns: true,
+    skip_empty_lines: true,
+  });
+  return records.map((record) => ({
     id: parseInt(record.id),
     value: record.question,
   }));

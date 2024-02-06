@@ -28,6 +28,7 @@ export const questions = sqliteTable(
 export const gameTypes = sqliteTable("game_types", {
   id: integer("id").primaryKey(),
   name: text("name").unique().notNull(),
+  description: text("description").notNull().default(""),
 });
 
 // games

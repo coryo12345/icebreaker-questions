@@ -1,3 +1,4 @@
+import { getGameTypes } from "@/app/home/games/new/actions";
 import { NewGameForm } from "@/app/home/games/new/new-game-form";
 import {
   Card,
@@ -6,7 +7,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default function NewGamePage() {
+export default async function NewGamePage() {
+  const gameTypes = await getGameTypes();
+
   return (
     <Card>
       <CardHeader>
@@ -15,7 +18,11 @@ export default function NewGamePage() {
           Create a new game to play with someone else
         </CardDescription>
       </CardHeader>
-      <NewGameForm />
+      {gameTypes !== null ? (
+        <NewGameForm gameTypes={gameTypes} />
+      ) : (
+        <p>Something went wrong, please try again later.</p>
+      )}
     </Card>
   );
 }
