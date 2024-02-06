@@ -1,6 +1,7 @@
 "use client";
 
 import { getUserAnswers, saveAnswers } from "@/app/home/answers/actions";
+import { TableFooter } from "@/components/table/footer";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,7 +26,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronLeft, ChevronRight, FileWarning } from "lucide-react";
+import { FileWarning } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -70,24 +71,6 @@ export default function AnswersTable({
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
-
-  const footerRowMessage = useMemo<string>(() => {
-    let { minRow, maxRow } = table.getPaginationRowModel().flatRows.reduce(
-      (prev, curr) => {
-        return {
-          minRow: Math.min(curr.index + 1, prev.minRow),
-          maxRow: Math.max(curr.index + 1, prev.maxRow),
-        };
-      },
-      { minRow: Number.MAX_SAFE_INTEGER, maxRow: 0 }
-    );
-    if (data.length === 0) {
-      minRow = 0;
-      maxRow = 0;
-    }
-    return `Showing rows ${minRow}-${maxRow} of ${data.length}`;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [table, table.getPaginationRowModel(), data.length]);
 
   const unsaved = useMemo(() => {
     return (
@@ -203,26 +186,7 @@ export default function AnswersTable({
             )}
           </TableBody>
         </Table>
-        <div className="flex justify-end items-center gap-2 mt-2">
-          <p className="inline-block text-sm">{footerRowMessage}</p>
-
-          <Button
-            size="icon"
-            variant="secondary"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </Button>
-          <Button
-            size="icon"
-            variant="secondary"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            <ChevronRight className="w-4 h-4" />
-          </Button>
-        </div>
+        <TableFooter data={data} table={table} />
       </CardContent>
       <CardFooter>
         <SaveButton unsaved={unsaved} save={save} />
