@@ -1,6 +1,6 @@
 "use client";
 
-import { saveAnswers, getUserAnswers } from "@/app/home/answers/actions";
+import { getUserAnswers, saveAnswers } from "@/app/home/answers/actions";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,10 +8,9 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow
 } from "@/components/ui/table";
 import {
   Tooltip,
@@ -21,14 +20,14 @@ import {
 } from "@/components/ui/tooltip";
 import { useSession } from "@/lib/session";
 import { questions as questionSchema, userAnswers } from "@/server/schema";
-import { ChevronLeft, ChevronRight, FileWarning } from "lucide-react";
-import { useMemo, useState } from "react";
-import { toast } from "sonner";
 import {
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { ChevronLeft, ChevronRight, FileWarning } from "lucide-react";
+import { useMemo, useState } from "react";
+import { toast } from "sonner";
 
 type UserAnswer = typeof userAnswers.$inferSelect & {
   question: (typeof questionSchema.$inferSelect)["value"];
@@ -87,7 +86,7 @@ export default function AnswersTable({
       maxRow = 0;
     }
     return `Showing rows ${minRow}-${maxRow} of ${data.length}`;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [table, table.getPaginationRowModel(), data.length]);
 
   const unsaved = useMemo(() => {
@@ -106,7 +105,13 @@ export default function AnswersTable({
     if (!ans) {
       setModifiedAnswers([
         ...modifiedAnswers,
-        { questionId, userId: session.id, value: answer, createdAt: new Date(), lastModified: new Date() },
+        {
+          questionId,
+          userId: session.id,
+          value: answer,
+          createdAt: new Date(),
+          lastModified: new Date(),
+        },
       ]);
     } else {
       setModifiedAnswers(
