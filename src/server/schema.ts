@@ -40,6 +40,8 @@ export const games = sqliteTable("games", {
   name: text("name").notNull().default(""),
   totalQuestions: integer("total_questions").notNull().default(5),
   currentQuestion: integer("current_question").notNull().default(0), // 0-based
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  lastModified: integer("last_modified", { mode: "timestamp" }).notNull(),
 });
 
 // answers for a user that they can re-use for different games
