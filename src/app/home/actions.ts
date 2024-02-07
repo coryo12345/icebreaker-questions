@@ -1,10 +1,18 @@
 "use server";
 
 import { AnswerPreview } from "@/models/answer";
+import { FullGame } from "@/models/games";
 import { getDb } from "@/server/db";
-import { questions as questionSchema, userAnswers } from "@/server/schema";
+import {
+  gameTypes as gameTypesSchema,
+  games as gamesSchema,
+  questions as questionSchema,
+  userAnswers,
+  users,
+} from "@/server/schema";
 import { getSession } from "@/server/session";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, or } from "drizzle-orm";
+import { alias } from "drizzle-orm/sqlite-core";
 
 export async function getLatestAnswers(): Promise<null | AnswerPreview[]> {
   const session = await getSession();
@@ -40,11 +48,34 @@ export async function getLatestAnswers(): Promise<null | AnswerPreview[]> {
   }
 }
 
-export async function getRecentGames(): Promise<null | any[]> {
+export async function getLatestGames(): Promise<FullGame[] | null> {
   const session = await getSession();
   if (!session.isLoggedIn) {
     return null;
   }
-  // TODO query db to find recent games for user
-  return [];
+
+  const db = await getDb();
+
+  try {
+    const player1 = alias(users, "player1");
+    const player2 = alias(users, "player2");
+    const gameTypes = alias(gameTypesSchema, "gameTypes");
+    const games = await db
+      .select()
+      .from(gamesSchema)
+      .innerJoin(player1, eq(gamesSchema.player1, player1.id))
+      .innerJoin(player2, eq(gamesSchema.player2, player2.id))
+      .innerJoin(gameTypes, eq(gamesSchema.gameType, gameTypes.id))
+      .where(
+        or(
+          eq(gamesSchema.player1, session.id),
+          eq(gamesSchema.player2, session.id)
+        )
+      )
+      .limit(5)
+      .orderBy(desc(gamesSchema.lastModified));
+    return games;
+  } catch (err) {
+    return null;
+  }
 }

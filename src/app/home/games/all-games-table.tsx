@@ -1,6 +1,7 @@
 "use client";
 
 import { TableFooter } from "@/components/table/footer";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -11,12 +12,12 @@ import {
 } from "@/components/ui/table";
 import { useSession } from "@/lib/session";
 import { FullGame } from "@/models/games";
-import { games as gamesSchema } from "@/server/schema";
 import {
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import Link from "next/link";
 import { useMemo } from "react";
 
 export function AllGamesTable({ games }: Readonly<{ games: FullGame[] }>) {
@@ -58,6 +59,7 @@ export function AllGamesTable({ games }: Readonly<{ games: FullGame[] }>) {
             <TableHead>Status</TableHead>
             <TableHead>Game Type</TableHead>
             <TableHead>Last Move</TableHead>
+            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -76,6 +78,13 @@ export function AllGamesTable({ games }: Readonly<{ games: FullGame[] }>) {
                 <TableCell>{row.original.gameTypes.name}</TableCell>
                 <TableCell>
                   {row.original.games.lastModified.toLocaleString()}
+                </TableCell>
+                <TableCell>
+                  <Button variant="secondary" asChild>
+                    <Link href={`/home/games/${row.original.games.id}`}>
+                      Play
+                    </Link>
+                  </Button>
                 </TableCell>
               </TableRow>
             ))

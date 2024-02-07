@@ -10,13 +10,17 @@ import "server-only";
 
 export async function getAllGames(): Promise<FullGame[] | null> {
   const session = await getSession();
+  if (!session.isLoggedIn) {
+    return null;
+  }
+
   const db = await getDb();
 
   try {
     const player1 = alias(users, "player1");
     const player2 = alias(users, "player2");
     const gameTypes = alias(gameTypesSchema, "gameTypes");
-    const games = db
+    const games = await db
       .select()
       .from(gamesSchema)
       .innerJoin(player1, eq(gamesSchema.player1, player1.id))

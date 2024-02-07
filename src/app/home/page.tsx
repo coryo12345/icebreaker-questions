@@ -1,6 +1,6 @@
-import { getLatestAnswers, getRecentGames } from "@/app/home/actions";
+import { getLatestAnswers, getLatestGames } from "@/app/home/actions";
 import { AnswersTable } from "@/app/home/answers-table";
-import { GamesTable } from "@/app/home/games-table";
+import { AllGamesTable } from "@/app/home/games/all-games-table";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,8 +13,8 @@ import {
 import Link from "next/link";
 
 export default async function HomePage() {
-  const games = await getRecentGames();
   const answers = await getLatestAnswers();
+  const games = await getLatestGames();
 
   return (
     <div className="flex flex-col gap-4">
@@ -45,7 +45,11 @@ export default async function HomePage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <GamesTable games={games} />
+          {games === null ? (
+            <p>Unable to load recent games.</p>
+          ) : (
+            <AllGamesTable games={games} />
+          )}
         </CardContent>
         <CardFooter>
           <Link href="/home/games" className="mr-2">
