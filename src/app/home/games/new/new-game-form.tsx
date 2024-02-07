@@ -1,5 +1,6 @@
 "use client";
 
+import { createGame } from "@/app/home/games/new/actions";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardFooter } from "@/components/ui/card";
 import {
@@ -19,27 +20,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useSession } from "@/lib/session";
 import { gameTypes as gameTypesSchema } from "@/server/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const formSchema = z.object({
-  name: z.string(),
-  opponent: z.string().min(1, { message: "You must have an opponent" }),
-  gameType: z.string(),
-  questionCount: z
-    .number()
-    .min(1, { message: "Games must have between 1 and 10 questions" })
-    .max(10, { message: "Games must have between 1 and 10 questions" }),
-});
-
 export function NewGameForm({
   gameTypes,
 }: {
   gameTypes: (typeof gameTypesSchema.$inferSelect)[];
 }) {
+  const { session } = useSession();
+
+  const formSchema = z.object({
+    name: z.string(),
+    opponent: z
+      .string()
+      .min(1, { message: "You must have an opponent" })
+      .refine((arg) => arg !== session.username, {
+        message: "You cannot play against yourself",
+      }),
+    gameType: z.string(),
+    questionCount: z
+      .number()
+      .min(1, { message: "Games must have between 1 and 10 questions" })
+      .max(10, { message: "Games must have between 1 and 10 questions" }),
+  });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -58,9 +67,14 @@ export function NewGameForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form, form.getValues(), gameTypes]);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    // TODO
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const resp = await createGame({
+      name: values.name,
+      gameType: values.gameType,
+      opponent: values.opponent,
+      questionCount: values.questionCount,
+    });
+    console.log(resp);
   }
 
   return (
