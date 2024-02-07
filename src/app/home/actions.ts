@@ -57,6 +57,7 @@ export async function getLatestGames(): Promise<FullGame[] | null> {
   const db = await getDb();
 
   try {
+    // TODO don't include password hash
     const player1 = alias(users, "player1");
     const player2 = alias(users, "player2");
     const gameTypes = alias(gameTypesSchema, "gameTypes");

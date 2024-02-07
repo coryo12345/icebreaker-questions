@@ -2,13 +2,17 @@
 
 import { FullGame } from "@/models/games";
 import { getDb } from "@/server/db";
-import { gameTypes as gameTypesSchema, games as gamesSchema, users } from "@/server/schema";
+import {
+  gameTypes as gameTypesSchema,
+  games as gamesSchema,
+  users,
+} from "@/server/schema";
 import { getSession } from "@/server/session";
-import { desc, eq, or } from "drizzle-orm";
+import { and, desc, eq, or } from "drizzle-orm";
 import { alias } from "drizzle-orm/sqlite-core";
 import "server-only";
 
-export async function getAllGames(): Promise<FullGame[] | null> {
+export async function getGameById(id: number): Promise<FullGame | null> {
   const session = await getSession();
   if (!session.isLoggedIn) {
     return null;
@@ -28,13 +32,19 @@ export async function getAllGames(): Promise<FullGame[] | null> {
       .innerJoin(player2, eq(gamesSchema.player2, player2.id))
       .innerJoin(gameTypes, eq(gamesSchema.gameType, gameTypes.id))
       .where(
-        or(
-          eq(gamesSchema.player1, session.id),
-          eq(gamesSchema.player2, session.id)
+        and(
+          eq(gamesSchema.id, id),
+          or(
+            eq(gamesSchema.player1, session.id),
+            eq(gamesSchema.player2, session.id)
+          )
         )
       )
       .orderBy(desc(gamesSchema.lastModified));
-    return games;
+    if (games.length !== 1) {
+      return null;
+    }
+    return games[0];
   } catch (err) {
     return null;
   }
