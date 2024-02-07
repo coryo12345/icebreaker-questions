@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useSession } from "@/lib/session";
+import { FullGame } from "@/models/games";
 import { games as gamesSchema } from "@/server/schema";
 import {
   getCoreRowModel,
@@ -18,9 +19,7 @@ import {
 } from "@tanstack/react-table";
 import { useMemo } from "react";
 
-export function AllGamesTable({
-  games,
-}: Readonly<{ games: (typeof gamesSchema.$inferSelect)[] }>) {
+export function AllGamesTable({ games }: Readonly<{ games: FullGame[] }>) {
   const { session } = useSession();
 
   const data = useMemo(
@@ -28,7 +27,12 @@ export function AllGamesTable({
       games.map((game) => {
         return {
           ...game,
-          opponent: game.player1 === session.id ? game.player2 : game.player1,
+          opponent:
+            session.id === -1
+              ? ""
+              : game.games.player1 === session.id
+              ? game.player2.username
+              : game.player1.username,
         };
       }),
     [games, session.id]
@@ -59,13 +63,19 @@ export function AllGamesTable({
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow key={row.original.id}>
-                <TableCell>{row.original.name}</TableCell>
-                <TableCell>{row.original.opponent}</TableCell>
-                <TableCell>{row.original.status}</TableCell>
-                <TableCell>{row.original.gameType}</TableCell>
+              <TableRow key={row.original.games.id}>
                 <TableCell>
-                  {row.original.lastModified.toLocaleString()}
+                  {row.original.games.name.length === 0 ? (
+                    <i className="italic">No game name</i>
+                  ) : (
+                    row.original.games.name
+                  )}
+                </TableCell>
+                <TableCell>{row.original.opponent}</TableCell>
+                <TableCell>{row.original.games.status}</TableCell>
+                <TableCell>{row.original.gameTypes.name}</TableCell>
+                <TableCell>
+                  {row.original.games.lastModified.toLocaleString()}
                 </TableCell>
               </TableRow>
             ))
