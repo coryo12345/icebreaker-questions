@@ -29,11 +29,9 @@ export default async function HomePage() {
           <AnswersTable answers={answers} />
         </CardContent>
         <CardFooter>
-          <Link href="/home/answers">
-            <Button className="text-sm" variant="secondary">
-              View All Answers
-            </Button>
-          </Link>
+          <Button className="text-sm" variant="secondary">
+            <Link href="/home/answers">View All Answers</Link>
+          </Button>
         </CardFooter>
       </Card>
 
@@ -52,14 +50,14 @@ export default async function HomePage() {
           )}
         </CardContent>
         <CardFooter>
-          <Link href="/home/games" className="mr-2">
-            <Button className="text-sm" variant="secondary">
+          <Button className="text-sm" variant="secondary" asChild>
+            <Link href="/home/games" className="mr-2">
               All Games
-            </Button>
-          </Link>
-          <Link href="/home/games/new">
-            <Button className="text-sm">New Game</Button>
-          </Link>
+            </Link>
+          </Button>
+          <Button className="text-sm">
+            <Link href="/home/games/new">New Game</Link>
+          </Button>
         </CardFooter>
       </Card>
     </div>

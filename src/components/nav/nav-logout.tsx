@@ -13,5 +13,5 @@ export function NavLogout() {
     router.push('/');
   }
 
-  return <Button variant="secondary" onClick={handleLogout}>Log Out</Button>;
+  return <Button variant="secondary" onClick={handleLogout} type="button">Log Out</Button>;
 }
