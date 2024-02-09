@@ -58,8 +58,11 @@ export async function getLatestGames(): Promise<FullGame[] | null> {
   const db = await getDb();
 
   try {
-    return await fullGameQuery(db, session.id).limit(5);
+    const games = await fullGameQuery(db, session.id).limit(5);
+    console.log(games);
+    return games;
   } catch (err) {
+    console.error(err);
     return null;
   }
 }

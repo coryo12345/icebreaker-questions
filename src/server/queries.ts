@@ -14,8 +14,11 @@ export function fullGameQuery(
   userId: number,
   gameId?: number
 ) {
-  const player1 = alias(users, "player1");
-  const player2 = alias(users, "player2");
+  const safeUsers = db
+    .select({ id: users.id, username: users.username })
+    .from(users);
+  const player1 = db.$with("player1").as(safeUsers);
+  const player2 = db.$with("player2").as(safeUsers);
   const gameTypes = alias(gameTypesSchema, "gameTypes");
 
   const playerCondition = or(
@@ -26,8 +29,8 @@ export function fullGameQuery(
     ? playerCondition
     : and(eq(gamesSchema.id, gameId as number), playerCondition);
 
-  // TODO don't include password hash
   return db
+    .with(player1, player2)
     .select()
     .from(gamesSchema)
     .innerJoin(player1, eq(gamesSchema.player1, player1.id))

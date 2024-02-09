@@ -20,6 +20,7 @@ export async function getAllGames(): Promise<FullGame[] | null> {
   try {
     return await fullGameQuery(db, session.id);
   } catch (err) {
+    console.error(err);
     return null;
   }
 }

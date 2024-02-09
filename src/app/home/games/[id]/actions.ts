@@ -28,6 +28,7 @@ export async function getGameById(id: number): Promise<FullGame | null> {
     }
     return games[0];
   } catch (err) {
+    console.error(err);
     return null;
   }
 }
