@@ -3,6 +3,7 @@
 import { AnswerPreview } from "@/models/answer";
 import { FullGame } from "@/models/games";
 import { getDb } from "@/server/db";
+import { fullGameQuery } from "@/server/queries";
 import {
   gameTypes as gameTypesSchema,
   games as gamesSchema,
@@ -57,25 +58,7 @@ export async function getLatestGames(): Promise<FullGame[] | null> {
   const db = await getDb();
 
   try {
-    // TODO don't include password hash
-    const player1 = alias(users, "player1");
-    const player2 = alias(users, "player2");
-    const gameTypes = alias(gameTypesSchema, "gameTypes");
-    const games = await db
-      .select()
-      .from(gamesSchema)
-      .innerJoin(player1, eq(gamesSchema.player1, player1.id))
-      .innerJoin(player2, eq(gamesSchema.player2, player2.id))
-      .innerJoin(gameTypes, eq(gamesSchema.gameType, gameTypes.id))
-      .where(
-        or(
-          eq(gamesSchema.player1, session.id),
-          eq(gamesSchema.player2, session.id)
-        )
-      )
-      .limit(5)
-      .orderBy(desc(gamesSchema.lastModified));
-    return games;
+    return await fullGameQuery(db, session.id).limit(5);
   } catch (err) {
     return null;
   }
