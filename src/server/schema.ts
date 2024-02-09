@@ -32,18 +32,25 @@ export const gameTypes = sqliteTable("game_types", {
 });
 
 // games
-export const games = sqliteTable("games", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  status: integer("status").notNull().default(0),
-  player1: integer("player_1").references((): any => users.id),
-  player2: integer("player_2").references((): any => users.id),
-  gameType: integer("game_type").references((): any => gameTypes.id),
-  name: text("name").notNull().default(""),
-  totalQuestions: integer("total_questions").notNull().default(5),
-  currentQuestion: integer("current_question").notNull().default(0), // 0-based
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  lastModified: integer("last_modified", { mode: "timestamp" }).notNull(),
-});
+export const games = sqliteTable(
+  "games",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    status: integer("status").notNull().default(0),
+    player1: integer("player_1").references((): any => users.id),
+    player2: integer("player_2").references((): any => users.id),
+    gameType: integer("game_type").references((): any => gameTypes.id),
+    name: text("name").notNull().default(""),
+    totalQuestions: integer("total_questions").notNull().default(5),
+    currentQuestion: integer("current_question").notNull().default(0), // 0-based
+    createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+    lastModified: integer("last_modified", { mode: "timestamp" }).notNull(),
+  },
+  (table) => ({
+    p1Idx: index("p1_idx").on(table.player1),
+    p2Idx: index("p2_idx").on(table.player2),
+  })
+);
 
 // answers for a user that they can re-use for different games
 export const userAnswers = sqliteTable(
@@ -63,3 +70,11 @@ export const userAnswers = sqliteTable(
     pk: primaryKey({ columns: [table.userId, table.questionId] }),
   })
 );
+
+export const gameQuestions = sqliteTable("game_questions", {
+  gameId: integer("game_id").references((): any => games.id),
+  questionId: integer("question_id").references((): any => questions.id),
+  questionNumber: integer("question_number").notNull(),
+}, (table) => ({
+  gameIdx: index("game_idx").on(table.gameId),
+}));
