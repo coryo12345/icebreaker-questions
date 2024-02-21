@@ -86,7 +86,7 @@ export function NewGameForm({
             name="name"
             render={({ field }) => (
               <FormItem className="mb-2">
-                <FormLabel>Username</FormLabel>
+                <FormLabel>Game Name</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="A game to learn"
