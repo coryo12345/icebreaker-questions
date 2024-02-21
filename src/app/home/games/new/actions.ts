@@ -1,9 +1,15 @@
 "use server";
 
 import { getDb } from "@/server/db";
-import { gameTypes, games as gamesSchema, users } from "@/server/schema";
+import {
+  gameQuestions,
+  gameTypes,
+  games as gamesSchema,
+  questions,
+  users,
+} from "@/server/schema";
 import { getSession } from "@/server/session";
-import { and, eq, not } from "drizzle-orm";
+import { and, eq, not, sql } from "drizzle-orm";
 import "server-only";
 
 export async function getGameTypes(): Promise<
@@ -28,7 +34,7 @@ export interface GameFormData {
 
 export async function createGame(
   newGameData: GameFormData
-): Promise<{ status: "success" } | { status: "error"; message: string }> {
+): Promise<{ status: "success"; id: number } | { status: "error"; message: string }> {
   const session = await getSession();
   if (!session.isLoggedIn) {
     return {
@@ -85,20 +91,43 @@ export async function createGame(
     };
   }
 
+  let gameId: number;
   try {
-    await db.insert(gamesSchema).values({
-      status: 0,
-      player1: session.id,
-      player2: op[0].id,
-      gameType: parseInt(newGameData.gameType),
-      name: newGameData.name,
-      totalQuestions: newGameData.questionCount,
-      createdAt: new Date(),
-      lastModified: new Date(),
-    });
+    const games = await db
+      .insert(gamesSchema)
+      .values({
+        status: 0,
+        player1: session.id,
+        player2: op[0].id,
+        gameType: parseInt(newGameData.gameType),
+        name: newGameData.name,
+        totalQuestions: newGameData.questionCount,
+        createdAt: new Date(),
+        lastModified: new Date(),
+      })
+      .returning({ id: gamesSchema.id });
+
+    if (games.length !== 1) {
+      throw new Error();
+    }
+    gameId = games[0].id;
+
+    // next we need to generate questions for game
+    const questionIds = await db
+      .select({ id: questions.id })
+      .from(questions)
+      .orderBy(sql`RANDOM()`)
+      .limit(newGameData.questionCount);
+
+    for (let i = 0; i < questionIds.length; i++) {
+      const q = questionIds[i];
+      await db
+        .insert(gameQuestions)
+        .values({ gameId, questionId: q.id, questionNumber: i });
+    }
   } catch (err) {
     return { status: "error", message: "internal server error" };
   }
 
-  return { status: "success" };
+  return { status: "success", id: gameId };
 }

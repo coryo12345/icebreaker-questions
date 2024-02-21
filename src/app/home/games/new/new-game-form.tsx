@@ -23,8 +23,10 @@ import {
 import { useSession } from "@/lib/session";
 import { gameTypes as gameTypesSchema } from "@/server/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 export function NewGameForm({
@@ -32,6 +34,7 @@ export function NewGameForm({
 }: {
   gameTypes: (typeof gameTypesSchema.$inferSelect)[];
 }) {
+  const router = useRouter();
   const { session } = useSession();
 
   const formSchema = z.object({
@@ -43,8 +46,13 @@ export function NewGameForm({
         message: "You cannot play against yourself",
       }),
     gameType: z.string(),
-    questionCount: z
-      .number()
+    questionCount: z.coerce
+      .number({
+        required_error: "Question count is required",
+        invalid_type_error: "Question count must be a number",
+      })
+      .int()
+      .positive()
       .min(1, { message: "Games must have between 1 and 10 questions" })
       .max(10, { message: "Games must have between 1 and 10 questions" }),
   });
@@ -74,7 +82,12 @@ export function NewGameForm({
       opponent: values.opponent,
       questionCount: values.questionCount,
     });
-    console.log(resp);
+    if (resp.status === "error") {
+      toast.error(resp.message);
+    } else if (resp.status === "success") {
+      toast.success("Successfully created new game.");
+      router.push(`/home/games/${resp.id}`);
+    }
   }
 
   return (
