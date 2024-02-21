@@ -50,7 +50,7 @@ export default async function GamePage({ params }: { params: { id: string } }) {
         </CardHeader>
         <CardContent>
           <p>
-            Currently on round {game.games.currentQuestion}/
+            Currently on round {game.games.currentQuestion + 1}/
             {game.games.totalQuestions}
           </p>
           <p>
