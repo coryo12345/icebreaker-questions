@@ -3,14 +3,7 @@
 import { FullGame } from "@/models/games";
 import { getDb } from "@/server/db";
 import { fullGameQuery } from "@/server/queries";
-import {
-  gameTypes as gameTypesSchema,
-  games as gamesSchema,
-  users,
-} from "@/server/schema";
 import { getSession } from "@/server/session";
-import { and, desc, eq, or } from "drizzle-orm";
-import { alias } from "drizzle-orm/sqlite-core";
 import "server-only";
 
 export async function getGameById(id: number): Promise<FullGame | null> {
