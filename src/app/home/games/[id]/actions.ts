@@ -3,7 +3,9 @@
 import { FullGame, GameQuestion } from "@/models/games";
 import { getDb } from "@/server/db";
 import { fullGameQuery, gameQuestionsQuery } from "@/server/queries";
+import { userAnswers } from "@/server/schema";
 import { getSession } from "@/server/session";
+import { and, eq } from "drizzle-orm";
 import "server-only";
 
 export async function getGameById(id: number): Promise<FullGame | null> {
@@ -45,6 +47,41 @@ export async function getGameQuestionsById(
   }
 }
 
-export async function submitAnswer(answer: string): Promise<boolean> {
+export async function getUserSavedAnswer(
+  userId: number,
+  questionId: number
+): Promise<string | undefined> {
+  const db = await getDb();
+
+  try {
+    const answers = await db
+      .select()
+      .from(userAnswers)
+      .where(
+        and(
+          eq(userAnswers.questionId, questionId),
+          eq(userAnswers.userId, userId)
+        )
+      );
+
+    if (answers.length != 1) {
+      return undefined;
+    }
+
+    return answers[0].value;
+  } catch (err) {
+    console.error(err);
+    return undefined;
+  }
+}
+
+export async function submitAnswer(
+  gameId: number,
+  answer: string,
+  saveAnswer: boolean
+): Promise<boolean> {
+  const session = await getSession();
+  if (!session.isLoggedIn) return false;
+
   return false;
 }

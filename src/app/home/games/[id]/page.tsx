@@ -1,6 +1,7 @@
 import {
   getGameById,
   getGameQuestionsById,
+  getUserSavedAnswer,
 } from "@/app/home/games/[id]/actions";
 import { PlayGameInput } from "@/app/home/games/[id]/game-input";
 import { GameQuestionHistory } from "@/app/home/games/[id]/game-question-history";
@@ -12,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { isNil } from "@/lib/utils";
+import { GameQuestion } from "@/models/games";
 import { getSession } from "@/server/session";
 import { redirect } from "next/navigation";
 
@@ -41,14 +43,7 @@ export default async function GamePage({ params }: { params: { id: string } }) {
   }
 
   if (!game || !questions) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Something went wrong</CardTitle>
-        </CardHeader>
-        <CardContent>Unable to load this game.</CardContent>
-      </Card>
-    );
+    return ErrorScreen();
   }
 
   const opponent =
@@ -62,9 +57,14 @@ export default async function GamePage({ params }: { params: { id: string } }) {
     (q) => q.questionNumber < (game?.games.currentQuestion ?? 0)
   );
 
-  const currentQuestion =
-    questions.find((q) => q.questionNumber === game?.games.currentQuestion)
-      ?.question ?? "";
+  const currentQuestion: GameQuestion | undefined = questions.find(
+    (q) => q.questionNumber === game?.games.currentQuestion
+  );
+  if (!currentQuestion) {
+    return ErrorScreen();
+  }
+
+  const savedAnswer = await getUserSavedAnswer(session.id, currentQuestion.questionId);
 
   return (
     <article className="flex flex-col gap-4">
@@ -85,11 +85,25 @@ export default async function GamePage({ params }: { params: { id: string } }) {
           </p>
         </CardContent>
       </Card>
-      <PlayGameInput game={game} currentQuestion={currentQuestion} />
-      {/* TODO make this > */}
-      {game.games.currentQuestion >= 0 && (
+      <PlayGameInput
+        game={game}
+        currentQuestion={currentQuestion.question}
+        savedAnswer={savedAnswer}
+      />
+      {game.games.currentQuestion > 0 && (
         <GameQuestionHistory game={game} pastQuestions={pastQuestions} />
       )}
     </article>
+  );
+}
+
+function ErrorScreen() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Something went wrong</CardTitle>
+      </CardHeader>
+      <CardContent>Unable to load this game.</CardContent>
+    </Card>
   );
 }
