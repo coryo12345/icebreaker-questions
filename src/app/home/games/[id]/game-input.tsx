@@ -12,10 +12,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FullGame } from "@/models/games";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-export function PlayGameInput(props: Readonly<{ game: FullGame }>) {
-  const [game, setGame] = useState(props.game);
+export function PlayGameInput(props: Readonly<{ game: FullGame, currentQuestion: string; }>) {
+  // const currentQuestion = useMemo(() => {
+  //   const round = game.games.currentQuestion;
+  // }, []);
 
   return (
     <Card>
@@ -26,7 +28,7 @@ export function PlayGameInput(props: Readonly<{ game: FullGame }>) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-lg mb-4">The Current Question</p>
+        <p className="text-lg mb-4">{props.currentQuestion}</p>
         <Label htmlFor="answer">Your Answer</Label>
         <Input
           name="answer"

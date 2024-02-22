@@ -1,8 +1,8 @@
 "use server";
 
-import { FullGame } from "@/models/games";
+import { FullGame, GameQuestion } from "@/models/games";
 import { getDb } from "@/server/db";
-import { fullGameQuery } from "@/server/queries";
+import { fullGameQuery, gameQuestionsQuery } from "@/server/queries";
 import { getSession } from "@/server/session";
 import "server-only";
 
@@ -24,4 +24,27 @@ export async function getGameById(id: number): Promise<FullGame | null> {
     console.error(err);
     return null;
   }
+}
+
+export async function getGameQuestionsById(
+  id: number
+): Promise<GameQuestion[] | null> {
+  const session = await getSession();
+  if (!session.isLoggedIn) {
+    return null;
+  }
+
+  const db = await getDb();
+
+  try {
+    const questions = await gameQuestionsQuery(db, id);
+    return questions;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
+
+export async function submitAnswer(answer: string): Promise<boolean> {
+  return false;
 }

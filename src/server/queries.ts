@@ -4,6 +4,8 @@ import {
   users,
   gameTypes as gameTypesSchema,
   games as gamesSchema,
+  questions as questionsSchema,
+  gameQuestions,
 } from "@/server/schema";
 import { and, eq, or, desc } from "drizzle-orm";
 import { alias } from "drizzle-orm/sqlite-core";
@@ -38,4 +40,22 @@ export function fullGameQuery(
     .innerJoin(gameTypes, eq(gamesSchema.gameType, gameTypes.id))
     .where(condition)
     .orderBy(desc(gamesSchema.lastModified));
+}
+
+export function gameQuestionsQuery(db: Awaited<ReturnType<typeof getDb>>, gameId: number) {
+  return db
+    .select({
+      gameId: gameQuestions.gameId,
+      questionId: questionsSchema.id,
+      question: questionsSchema.value,
+      questionNumber: gameQuestions.questionNumber,
+      player1Answer: gameQuestions.player1Answer,
+      player2Answer: gameQuestions.player2Answer,
+    })
+    .from(gameQuestions)
+    .innerJoin(
+      questionsSchema,
+      eq(gameQuestions.questionId, questionsSchema.id)
+    )
+    .where(eq(gameQuestions.gameId, gameId));
 }

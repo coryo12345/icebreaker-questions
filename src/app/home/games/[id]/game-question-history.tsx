@@ -15,33 +15,46 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FullGame } from "@/models/games";
-import { useState } from "react";
+import { useSession } from "@/lib/session";
+import { FullGame, GameQuestion } from "@/models/games";
+import { useMemo, useState } from "react";
 
-export function GameQuestionHistory(props: Readonly<{ game: FullGame }>) {
-  const [game, setGame] = useState(props.game);
+export function GameQuestionHistory(
+  props: Readonly<{ game: FullGame; pastQuestions: GameQuestion[] }>
+) {
+  const { session } = useSession();
+
+  const [userKey, opponentKey] = useMemo<
+    [keyof GameQuestion, keyof GameQuestion]
+  >(() => {
+    return session.id === props.game.games.player1
+      ? ["player1Answer", "player2Answer"]
+      : ["player2Answer", "player1Answer"];
+  }, [props.game, session.id]);
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Previous Rounds</CardTitle>
-        <CardDescription>TODO</CardDescription>
+        <CardDescription>Previously answered questions in this game</CardDescription>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Example</TableHead>
-              <TableHead>Table</TableHead>
-              <TableHead>TODO</TableHead>
+              <TableHead>Question</TableHead>
+              <TableHead>Your Answer</TableHead>
+              <TableHead>Opponent&apos;s Answer</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow>
-              <TableCell>example</TableCell>
-              <TableCell>example</TableCell>
-              <TableCell>example</TableCell>
-            </TableRow>
+            {props.pastQuestions.map((question) => (
+              <TableRow key={question.questionId}>
+                <TableCell>{question.question}</TableCell>
+                <TableCell>{question[userKey]}</TableCell>
+                <TableCell>{question[opponentKey]}</TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </CardContent>
