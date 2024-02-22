@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FullGame } from "@/models/games";
@@ -57,7 +58,7 @@ export function PlayGameInput(
               You have a saved answer for this question:
             </p>
             <p className="pl-4 my-2">
-              &quot;<i className="italic">{props.savedAnswer}</i>{" "}&quot;
+              &quot;<i className="italic">{props.savedAnswer}</i> &quot;
             </p>
             <Button variant="secondary" size="sm" onClick={useSavedAnswer}>
               Autofill
@@ -72,7 +73,14 @@ export function PlayGameInput(
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
         />
-
+        <div className="flex items-center space-x-1 mt-4">
+          <Checkbox
+            id="saveAnswer"
+            checked={saveAnswer}
+            onCheckedChange={() => setSaveAnswer(!saveAnswer)}
+          />
+          <Label htmlFor="saveAnswer">Save your answer for future games</Label>
+        </div>
       </CardContent>
       <CardFooter>
         <Button onClick={submit}>Submit</Button>
