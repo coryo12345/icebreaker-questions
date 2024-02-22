@@ -83,7 +83,7 @@ export function PlayGameInput(
         </div>
       </CardContent>
       <CardFooter>
-        <Button onClick={submit}>Submit</Button>
+        <Button disabled={answer.length < 1} onClick={submit}>Submit</Button>
       </CardFooter>
     </Card>
   );

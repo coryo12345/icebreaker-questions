@@ -12,7 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { isNil } from "@/lib/utils";
 import { GameQuestion } from "@/models/games";
 import { getSession } from "@/server/session";
 import { redirect } from "next/navigation";
@@ -48,10 +47,10 @@ export default async function GamePage({ params }: { params: { id: string } }) {
 
   const opponent =
     game.games.player1 === session.id
-      ? game.player2.username
-      : game.player1.username;
+      ? game.player2
+      : game.player1;
   const title =
-    game.games.name === "" ? `Game against ${opponent}` : game.games.name;
+    game.games.name === "" ? `Game against ${opponent.username}` : game.games.name;
 
   const pastQuestions = questions.filter(
     (q) => q.questionNumber < (game?.games.currentQuestion ?? 0)
@@ -81,7 +80,7 @@ export default async function GamePage({ params }: { params: { id: string } }) {
             {game.games.totalQuestions}
           </p>
           <p>
-            <strong>If compete:</strong> current score
+            <strong>If compete:</strong> current score (TODO)
           </p>
         </CardContent>
       </Card>

@@ -3,9 +3,9 @@
 import { FullGame, GameQuestion } from "@/models/games";
 import { getDb } from "@/server/db";
 import { fullGameQuery, gameQuestionsQuery } from "@/server/queries";
-import { userAnswers } from "@/server/schema";
+import { gameQuestions, games, userAnswers } from "@/server/schema";
 import { getSession } from "@/server/session";
-import { and, eq } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 import "server-only";
 
 export async function getGameById(id: number): Promise<FullGame | null> {
@@ -75,13 +75,113 @@ export async function getUserSavedAnswer(
   }
 }
 
+/**
+ * Submit answer for user for a given game
+ * @returns true if the submission was successful. If so, the page should reload.
+ * if there was an error, returns false. should probably show an error message to the user.
+ */
 export async function submitAnswer(
   gameId: number,
   answer: string,
   saveAnswer: boolean
 ): Promise<boolean> {
+  // get game with gameId to find currentRound
+  // determine if user is player1 or player2 using userId
+  // update userAnswer row with gameId & questionId
+  // if saveAnswer is true, update answers table with answer
+  // if both players have answered, increment currentRound
+
+  if (answer.length < 1) {
+    return false;
+  }
+
   const session = await getSession();
   if (!session.isLoggedIn) return false;
 
-  return false;
+  const db = await getDb();
+
+  try {
+    const gameResults = await db
+      .select()
+      .from(games)
+      .where(
+        and(
+          eq(games.id, gameId),
+          or(eq(games.player1, session.id), eq(games.player2, session.id))
+        )
+      );
+    if (gameResults.length != 1) {
+      throw new Error(
+        `expected 1 game with id ${gameId}, but found ${gameResults.length}`
+      );
+    }
+    const game = gameResults[0];
+
+    // check if game is completed
+    if (game.currentQuestion >= game.totalQuestions) {
+      return false;
+    }
+
+    let updateQuestionValue:
+      | Pick<typeof gameQuestions.$inferSelect, "player1Answer">
+      | Pick<typeof gameQuestions.$inferSelect, "player2Answer">;
+
+    if (session.id === game.player1) {
+      updateQuestionValue = { player1Answer: answer };
+    } else if (session.id === game.player2) {
+      updateQuestionValue = { player2Answer: answer };
+    } else {
+      throw new Error(
+        `User ${session.id} attempted to update answer for game ${gameId}, which they are not a part of`
+      );
+    }
+
+    await db
+      .update(gameQuestions)
+      .set(updateQuestionValue)
+      .where(
+        and(
+          eq(gameQuestions.gameId, game.id),
+          eq(gameQuestions.questionNumber, game.currentQuestion)
+        )
+      );
+
+    const newRowResults = await db
+      .select()
+      .from(gameQuestions)
+      .where(
+        and(
+          eq(gameQuestions.gameId, game.id),
+          eq(gameQuestions.questionNumber, game.currentQuestion)
+        )
+      );
+    if (newRowResults.length !== 1) {
+      throw new Error(
+        `Expected 1 row for question number ${game.currentQuestion} for game ${game.id} but found ${newRowResults.length}`
+      );
+    }
+    const newRow = newRowResults[0];
+
+    if (
+      newRow.player1Answer &&
+      newRow.player1Answer.length > 0 &&
+      newRow.player2Answer &&
+      newRow.player2Answer.length > 0
+    ) {
+      await db
+        .update(games)
+        .set({ currentQuestion: game.currentQuestion + 1 })
+        .where(eq(games.id, game.id));
+    }
+
+    if (saveAnswer) {
+      // await db.insert(userAnswers).values()
+      console.log("should save answer...");
+    }
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+
+  return true;
 }
