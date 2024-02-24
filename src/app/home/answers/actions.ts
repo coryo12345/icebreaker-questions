@@ -48,7 +48,7 @@ export async function saveAnswers(
           .values(answer)
           .onConflictDoUpdate({
             target: [userAnswers.questionId, userAnswers.userId],
-            set: { value: answer.value },
+            set: { value: answer.value, lastModified: new Date() },
           })
       );
     });

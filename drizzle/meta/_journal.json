@@ -36,6 +36,13 @@
       "when": 1708546984206,
       "tag": "0004_friendly_phantom_reporter",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1708790024144,
+      "tag": "0005_broad_valkyrie",
+      "breakpoints": true
     }
   ]
 }

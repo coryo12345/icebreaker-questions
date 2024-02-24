@@ -175,8 +175,18 @@ export async function submitAnswer(
     }
 
     if (saveAnswer) {
-      // await db.insert(userAnswers).values()
-      console.log("should save answer...");
+      await db.insert(userAnswers)
+        .values({
+          value: answer,
+          createdAt: new Date(),
+          lastModified: new Date(),
+          questionId: newRow.questionId,
+          userId: session.id,
+        })
+        .onConflictDoUpdate({
+          target: [userAnswers.questionId, userAnswers.userId],
+          set: { value: answer, lastModified: new Date() },
+        });
     }
   } catch (err) {
     console.error(err);
