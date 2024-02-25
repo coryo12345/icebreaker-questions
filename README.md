@@ -10,7 +10,7 @@ newlywed-esque style app to learn about another person. made really just for me 
 * [x] Give user the option to save new answer as their answer for future games. (default = true)
 * [x] On submit, save user answer for game & optionally for user-answer if selected
 * [x] If opponent has already answered for current question, increment current question
-* [ ] somehow need to reload page content
+* [x] somehow need to reload page content
 * [ ] update game view to show status if you have already answered
     * either show "waiting for opponent"
     * or show confirmation screen to "see your opponents answer"

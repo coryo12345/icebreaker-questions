@@ -14,6 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FullGame } from "@/models/games";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -24,6 +25,7 @@ export function PlayGameInput(
     savedAnswer?: string;
   }>
 ) {
+  const router = useRouter();
   const [answer, setAnswer] = useState("");
   const [saveAnswer, setSaveAnswer] = useState(true);
 
@@ -34,7 +36,7 @@ export function PlayGameInput(
   const submit = async () => {
     const success = await submitAnswer(props.game.games.id, answer, saveAnswer);
     if (success) {
-      // TODO
+      router.refresh();
     } else {
       toast.error(
         "Something went wrong, and we couldn't submit your answer. Please try again later."
