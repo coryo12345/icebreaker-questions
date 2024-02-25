@@ -38,7 +38,8 @@ export default async function GamePage({ params }: { params: { id: string } }) {
     game = result[0];
     questions = result[1];
   } catch (err) {
-    // don't need to do anything here, since the values will be undefined the error will be implicitly handled below
+    // this is redundant, but why not?
+    return ErrorScreen();
   }
 
   if (!game || !questions) {
@@ -46,11 +47,11 @@ export default async function GamePage({ params }: { params: { id: string } }) {
   }
 
   const opponent =
-    game.games.player1 === session.id
-      ? game.player2
-      : game.player1;
+    game.games.player1 === session.id ? game.player2 : game.player1;
   const title =
-    game.games.name === "" ? `Game against ${opponent.username}` : game.games.name;
+    game.games.name === ""
+      ? `Game against ${opponent.username}`
+      : game.games.name;
 
   const pastQuestions = questions.filter(
     (q) => q.questionNumber < (game?.games.currentQuestion ?? 0)
@@ -63,7 +64,10 @@ export default async function GamePage({ params }: { params: { id: string } }) {
     return ErrorScreen();
   }
 
-  const savedAnswer = await getUserSavedAnswer(session.id, currentQuestion.questionId);
+  const savedAnswer = await getUserSavedAnswer(
+    session.id,
+    currentQuestion.questionId
+  );
 
   return (
     <article className="flex flex-col gap-4">
