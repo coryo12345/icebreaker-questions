@@ -5,43 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1706904581716,
-      "tag": "0000_strong_reptil",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1707244945565,
-      "tag": "0001_colossal_malice",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1707254054883,
-      "tag": "0002_nostalgic_groot",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1707446375786,
-      "tag": "0003_bored_magik",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1708546984206,
-      "tag": "0004_friendly_phantom_reporter",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "5",
-      "when": 1708790024144,
-      "tag": "0005_broad_valkyrie",
+      "when": 1708831972351,
+      "tag": "0000_illegal_tarot",
       "breakpoints": true
     }
   ]
