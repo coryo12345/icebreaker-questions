@@ -11,10 +11,13 @@ newlywed-esque style app to learn about another person. made really just for me 
 * [x] On submit, save user answer for game & optionally for user-answer if selected
 * [x] If opponent has already answered for current question, increment current question
 * [x] somehow need to reload page content
-* [ ] update game view to show status if you have already answered
-    * either show "waiting for opponent"
-    * or show confirmation screen to "see your opponents answer"
+* [x] update game view to show status if you have already answered: show "waiting for opponent"
+* [ ] show confirmation screen to "see your opponents answer"
 * [ ] Add confirm btn to confirmation screen to move to next question
+* [ ] update status col in DB
+* [ ] show correct text for status
+
+next up: compete mode
 
 ### Stuff to fix
 * Answers table inputs on second page (changing value moves you back to first page??)

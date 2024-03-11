@@ -16,7 +16,9 @@ import { GameQuestion } from "@/models/games";
 import { getSession } from "@/server/session";
 import { redirect } from "next/navigation";
 
-export default async function GamePage({ params }: { params: { id: string } }) {
+export default async function GamePage({
+  params,
+}: Readonly<{ params: { id: string } }>) {
   const session = await getSession();
   if (!session.isLoggedIn) {
     redirect("/");
@@ -64,10 +66,22 @@ export default async function GamePage({ params }: { params: { id: string } }) {
     return ErrorScreen();
   }
 
-  const savedAnswer = await getUserSavedAnswer(
-    session.id,
-    currentQuestion.questionId
-  );
+  // check if user has already answered
+  // if yes, then that means opponent has not answered.
+  // (if opponent has answered also then the current question ID would have been incremented!)
+  let waitingForOpponent = false;
+  {
+    const playerKey: keyof typeof currentQuestion = game.games.player1 === session.id ? 'player1Answer' : 'player2Answer';
+    waitingForOpponent = !!currentQuestion[playerKey] && currentQuestion[playerKey]!?.length > 0;
+  }
+
+  let savedAnswer: Awaited<ReturnType<typeof getUserSavedAnswer>>;
+  if (!waitingForOpponent) {
+    savedAnswer = await getUserSavedAnswer(
+      session.id,
+      currentQuestion.questionId
+    );
+  }
 
   return (
     <article className="flex flex-col gap-4">
@@ -88,11 +102,20 @@ export default async function GamePage({ params }: { params: { id: string } }) {
           </p>
         </CardContent>
       </Card>
-      <PlayGameInput
-        game={game}
-        currentQuestion={currentQuestion.question}
-        savedAnswer={savedAnswer}
-      />
+      {waitingForOpponent ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Waiting for Opponent</CardTitle>
+            <CardDescription>You have already answered this question, but your opponent has not.</CardDescription>
+          </CardHeader>
+        </Card>
+      ) : (
+        <PlayGameInput
+          game={game}
+          currentQuestion={currentQuestion.question}
+          savedAnswer={savedAnswer}
+        />
+      )}
       {game.games.currentQuestion > 0 && (
         <GameQuestionHistory game={game} pastQuestions={pastQuestions} />
       )}
