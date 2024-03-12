@@ -40,6 +40,7 @@ export default async function GamePage({
     game = result[0];
     questions = result[1];
   } catch (err) {
+    console.error(err);
     // this is redundant, but why not?
     return ErrorScreen();
   }

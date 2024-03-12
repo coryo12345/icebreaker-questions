@@ -21,6 +21,7 @@ export async function getGameTypes(): Promise<
     const results = await db.select().from(gameTypes);
     return results;
   } catch (err) {
+    console.error(err);
     return null;
   }
 }
@@ -54,6 +55,7 @@ export async function createGame(
       .from(gameTypes)
       .where(eq(gameTypes.id, parseInt(newGameData.gameType)));
   } catch (err) {
+    console.error(err);
     return { status: "error", message: "internal server error" };
   }
   if (gt.length !== 1) {
@@ -73,6 +75,7 @@ export async function createGame(
         )
       );
   } catch (err) {
+    console.error(err);
     return { status: "error", message: "internal server error" };
   }
   if (op.length !== 1) {
@@ -126,6 +129,7 @@ export async function createGame(
         .values({ gameId, questionId: q.id, questionNumber: i });
     }
   } catch (err) {
+    console.error(err);
     return { status: "error", message: "internal server error" };
   }
 

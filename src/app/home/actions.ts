@@ -45,6 +45,7 @@ export async function getLatestAnswers(): Promise<null | AnswerPreview[]> {
       })
       .filter((a) => a !== undefined) as AnswerPreview[];
   } catch (err) {
+    console.error(err);
     return null;
   }
 }

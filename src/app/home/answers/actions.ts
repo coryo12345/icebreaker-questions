@@ -14,6 +14,7 @@ export async function getAllQuestions(): Promise<
     const results = await db.select().from(questions);
     return results;
   } catch (err) {
+    console.error(err);
     return null;
   }
 }
@@ -31,6 +32,7 @@ export async function getUserAnswers(): Promise<
     const results = await db.select().from(userAnswers).where(eq(userAnswers.userId, session.id));
     return results;
   } catch (err) {
+    console.error(err);
     return null;
   }
 }
@@ -54,6 +56,7 @@ export async function saveAnswers(
     });
     await Promise.all(promises);
   } catch (err) {
+    console.error(err);
     return false;
   }
   return true;
